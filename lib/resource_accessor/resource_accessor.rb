@@ -1,5 +1,4 @@
 require 'net/https'
-require 'json'
 
 require 'system_timer' if RUBY_VERSION.to_f < 1.9 and RUBY_PLATFORM != 'java'
 
