@@ -1,0 +1,10 @@
+*.gem
+*.rbc
+.bundle
+.config
+pkg
+rdoc
+tmp
+.idea/*.*
+*.gem
+
