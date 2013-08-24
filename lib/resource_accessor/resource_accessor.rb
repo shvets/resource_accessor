@@ -1,9 +1,13 @@
 require 'net/https'
 
-require 'system_timer' if RUBY_VERSION.to_f < 1.9 and RUBY_PLATFORM != 'java'
-
 class ResourceAccessor
-  include SystemTimer if RUBY_VERSION.to_f < 1.9 and RUBY_PLATFORM != 'java'
+  attr_accessor :timeout, :ca_file, :validate_ssl_cert
+
+  def initialize timeout = 10000, ca_file = nil, validate_ssl_cert = false
+    @timeout = timeout
+    @ca_file = ca_file
+    @validate_ssl_cert = validate_ssl_cert
+  end
 
   def get_response params, headers = {}
     locate_response(params[:url], params[:method], headers, params[:body], params[:cookie])
@@ -19,6 +23,12 @@ class ResourceAccessor
 
   def get_ajax_response params, headers = {}
     headers['X-Requested-With'] = 'XMLHttpRequest'
+
+    locate_response(params[:url], params[:method], headers, params[:body], params[:cookie])
+  end
+
+  def get_json_response params, headers = {}
+    headers["Content-Type"] = "application/json;charset=UTF-8"
 
     locate_response(params[:url], params[:method], headers, params[:body], params[:cookie])
   end
@@ -85,25 +95,16 @@ class ResourceAccessor
       request = Net::HTTP::Get.new(uri.request_uri, headers)
     end
 
-    connection.read_timeout = timeout()
-    connection.open_timeout = timeout()
+    connection.read_timeout = timeout
+    connection.open_timeout = timeout
 
-    timeout_class = defined?(SystemTimer) ? SystemTimer : Timeout
-
-    timeout_class.timeout(timeout) do
+    Timeout.timeout(timeout) do
       return connection.request(request)
     end
   end
 
   def validate_ssl_cert?
-    false
+    validate_ssl_cert
   end
 
-  def ca_file
-    nil
-  end
-
-  def timeout
-    10000
-  end
 end

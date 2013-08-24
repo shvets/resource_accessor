@@ -1,4 +1,4 @@
-source :rubygems
+source "https://rubygems.org"
 
 group :development do
   gem "gemspec_deps_gen"
@@ -7,7 +7,5 @@ end
 
 group :test do
   gem "rspec"
-  gem "rspec-core"
-  gem "rspec-expectations"
   gem "mocha"
 end
