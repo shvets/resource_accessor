@@ -7,6 +7,7 @@ GEM
     gemspec_deps_gen (1.1.2)
       bundler
       file_utils
+    log4r (1.1.10)
     metaclass (0.0.1)
     mocha (0.14.0)
       metaclass (~> 0.0.1)
@@ -25,5 +26,6 @@ PLATFORMS
 DEPENDENCIES
   gemcutter
   gemspec_deps_gen
+  log4r
   mocha
   rspec

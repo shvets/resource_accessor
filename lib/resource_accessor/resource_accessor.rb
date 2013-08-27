@@ -1,4 +1,5 @@
 require 'net/https'
+require 'cgi'
 
 class ResourceAccessor
   attr_accessor :timeout, :ca_file, :validate_ssl_cert
@@ -41,6 +42,12 @@ class ResourceAccessor
     response = locate_response(url, :post, headers, body)
 
     response.response['set-cookie']
+  end
+
+  def query_from_hash(params)
+    return "" if params.empty?
+
+    params.sort.map {|k, v| "#{k}=#{v.nil? ? '' : CGI.escape(v)}"}.join("&")
   end
 
   private
