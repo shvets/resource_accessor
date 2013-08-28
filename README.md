@@ -43,6 +43,7 @@ response = accessor.get_response :url => some_url, :method => :post, :cookie => 
 response = accessor.get_response :url => some_url, :method => :post, :cookie => cookie,
                                  :body => some_string
 ```
+
 You have to specify HTTP method explicitly here (post).
 
 If you want to get AJAX resource, add special header to the request or use special method:
@@ -69,6 +70,18 @@ response = accessor.get_response {:url => some_url}, {'Content-Type" => "applica
 response2 = accessor.get_json_response :url => some_url
 ```
 
+If you want to provide additional parameters in GET call, use **query** parameter:
+
+```ruby
+response = accessor.get_response :url => some_url, :query => {:param1 => 'p1', :param2 => 'p2'}
+```
+
+or
+
+```ruby
+response = accessor.get_response :url => "#{some_url?param1=p1&param2=p2}"
+```
+
 You can setup timeout for your accessor object in milliseconds:
 
 ```ruby
@@ -81,7 +94,6 @@ If you need to work over ssl enable certificate validation before the call:
 accessor.validate_ssl_cert = true
 accessor.ca_file = 'your cert file location'
 ```
-
 
 ## Contributing
 
