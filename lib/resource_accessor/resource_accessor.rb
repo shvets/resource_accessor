@@ -41,7 +41,7 @@ class ResourceAccessor
 
     body = {:username => user_name, :password => password}
 
-    response = locate_response(url, :post, headers, body)
+    response = locate_response(url, nil, :post, headers, body)
 
     response.response['set-cookie']
   end
