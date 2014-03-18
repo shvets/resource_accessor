@@ -23,3 +23,7 @@
 == Version 1.2.1
 
 * Typo fix.
+
+== Version 1.2.2
+
+* Bug fix for 'put' http method.

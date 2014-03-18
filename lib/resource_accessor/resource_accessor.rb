@@ -103,6 +103,9 @@ class ResourceAccessor
       request.set_form_data(body) if body.kind_of? Hash
     elsif method == :put
       request = Net::HTTP::Put.new(uri.request_uri, headers)
+
+      request.body = body if body.kind_of? String
+      request.set_form_data(body) if body.kind_of? Hash
     else
       request = Net::HTTP::Get.new(uri.request_uri, headers)
     end
