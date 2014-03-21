@@ -27,3 +27,7 @@
 == Version 1.2.2
 
 * Bug fix for 'put' http method.
+
+== Version 1.2.3
+
+* Adding escape flag in order to control whether we want to escape parameter or not.

@@ -13,7 +13,7 @@ class ResourceAccessor
   end
 
   def get_response params, headers = {}
-    locate_response(params[:url], params[:query], params[:method], headers, params[:body], params[:cookie])
+    locate_response(params[:url], params[:query], params[:method], headers, params[:body], params[:escape], params[:cookie])
   end
 
   def get_soap_response params, headers = {}
@@ -21,19 +21,19 @@ class ResourceAccessor
     headers["SOAPAction"] = "" unless headers["SOAPAction"]
     headers["Content-Type"] = "text/xml;charset=UTF-8" unless headers["Content-Type"]
 
-    locate_response(params[:url], params[:query], params[:method], headers, params[:body], params[:cookie])
+    locate_response(params[:url], params[:query], params[:method], headers, params[:body], params[:escape], params[:cookie])
   end
 
   def get_ajax_response params, headers = {}
     headers['X-Requested-With'] = 'XMLHttpRequest'
 
-    locate_response(params[:url], params[:query], params[:method], headers, params[:body], params[:cookie])
+    locate_response(params[:url], params[:query], params[:method], headers, params[:body], params[:escape], params[:cookie])
   end
 
   def get_json_response params, headers = {}
     headers["Content-Type"] = "application/json;charset=UTF-8"
 
-    locate_response(params[:url], params[:query], params[:method], headers, params[:body], params[:cookie])
+    locate_response(params[:url], params[:query], params[:method], headers, params[:body], params[:escape], params[:cookie])
   end
 
   def get_cookie url, user_name, password
@@ -46,25 +46,29 @@ class ResourceAccessor
     response.response['set-cookie']
   end
 
-  def self.query_from_hash(params)
+  def self.query_from_hash(params, escape=true)
     return nil if params.nil? or params.empty?
 
-    params.sort.map {|key, value| "#{key}=#{value.nil? ? '' : CGI.escape(value)}"}.join("&")
+    params.sort.map do |key, value|
+      new_value = value.nil? ? '' : (escape ? CGI.escape(value) : value)
+
+      "#{key}=#{new_value}"
+    end.join("&")
   end
 
   private
 
-  def locate_response url, query, method, headers, body, cookie=nil
-    response = execute_request url, query, method, headers, body, cookie
+  def locate_response url, query, method, headers, body, escape=true, cookie=nil
+    response = execute_request url, query, method, headers, body, escape, cookie
 
     if response.class == Net::HTTPMovedPermanently
-      response = execute_request response['location'], method, headers, body, cookie
+      response = execute_request response['location'], method, headers, body, escape, cookie
     end
 
     response
   end
 
-  def execute_request url, query, method, headers, body, cookie=nil
+  def execute_request url, query, method, headers, body, escape, cookie=nil
     headers["User-Agent"] = "Ruby/#{RUBY_VERSION}" unless headers["User-Agent"]
     headers["Content-Type"] = "application/x-www-form-urlencoded; charset=UTF-8" unless headers["Content-Type"]
 
@@ -72,8 +76,9 @@ class ResourceAccessor
       headers['Cookie'] = cookie
     end
 
-    query_string = ResourceAccessor.query_from_hash(query)
+    query_string = ResourceAccessor.query_from_hash(query, escape)
     new_url = query_string.nil? ? url : "#{url}?#{query_string}"
+    # new_url = escape ? URI.escape(new_url) : new_url
 
     uri = URI.parse(URI.escape(new_url))
 
