@@ -49,14 +49,8 @@ class ResourceAccessor
   def self.query_from_hash(params, escape=true)
     return nil if params.nil? or params.empty?
 
-    params.sort.map do |key, value|
-      new_value = value.nil? ? '' : (escape ? CGI.escape(value) : value)
-
-      "#{key}=#{new_value}"
-    end.join("&")
+    encode params, escape
   end
-
-  private
 
   def locate_response url, query, method, headers, body, escape=true, cookie=nil
     response = execute_request url, query, method, headers, body, escape, cookie
@@ -121,6 +115,22 @@ class ResourceAccessor
     Timeout.timeout(timeout) do
       return connection.request(request)
     end
+  end
+
+  private
+
+  def self.encode(value, escape=true, key = nil)
+    case value
+      when Hash  then value.map { |k,v| encode(v, escape, append_key(key,k)) }.join('&')
+      when Array then value.map { |v| encode(v, escape, "#{key}[]") }.join('&')
+      when nil   then "#{key}="
+      else
+        escape ? "#{key}=#{CGI.escape(value.to_s)}" : "#{key}=#{value.to_s}"
+    end
+  end
+
+  def self.append_key(root_key, key)
+    root_key.nil? ? key : "#{root_key}[#{key.to_s}]"
   end
 
 end

@@ -25,7 +25,7 @@ describe ResourceAccessor do
       subject.class.query_from_hash({:name1 => "name 1", :name2 => "name 2"}).should eql "name1=name+1&name2=name+2"
     end
 
-    it "maps properly nil values " do
+    it "maps properly nil values" do
       subject.class.query_from_hash({:param1 => nil, :param2 => "A&B", :param3 => "C & D"}).should eql "param1=&param2=A%26B&param3=C+%26+D"
     end
 
