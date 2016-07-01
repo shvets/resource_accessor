@@ -6,7 +6,7 @@ require "thor"
 require "resource_accessor/version"
 require "gemspec_deps_gen/gemspec_deps_gen"
 
-class ProjectCommands < Thor
+class Commands < Thor
 
   def initialize *params
     super
@@ -18,8 +18,6 @@ class ProjectCommands < Thor
   no_commands do
     def generate
       generator = GemspecDepsGen.new
-
-      print @project_name
 
       generator.generate_dependencies "spec", "#{@project_name}.gemspec.erb", "#{@project_name}.gemspec"
     end
@@ -54,4 +52,6 @@ class ProjectCommands < Thor
   end
 end
 
-ProjectCommands.start
+if File.basename($0) != 'thor'
+  Commands.start
+end
