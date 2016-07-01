@@ -56,7 +56,14 @@ class ResourceAccessor
     response = execute_request url, query, method, headers, body, escape, cookie
 
     if response.class == Net::HTTPMovedPermanently
-      response = execute_request response['location'], method, headers, body, escape, cookie
+      location = response['location']
+
+      unless URI(location).scheme
+        new_uri = URI(url)
+        new_uri.path = response['location']
+      end
+
+      response = execute_request new_uri.to_s, query, method, headers, body, escape, cookie
     end
 
     response

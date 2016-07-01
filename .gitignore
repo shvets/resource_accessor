@@ -7,4 +7,5 @@ rdoc
 tmp
 .idea/*.*
 *.gem
+*.gemspec
 

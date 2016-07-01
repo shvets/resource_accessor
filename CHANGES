@@ -32,6 +32,6 @@
 
 * Adding escape flag in order to control whether we want to escape parameter or not.
 
-== Version 1.2.4
+== Version 1.2.4-1.2.5
 
 * Bug fix

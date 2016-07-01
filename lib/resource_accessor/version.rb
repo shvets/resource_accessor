@@ -1,3 +1,3 @@
-class ResourceAccessor
-  VERSION = "1.2.4"
+module ResourceAccessor
+  VERSION = "1.2.5"
 end
