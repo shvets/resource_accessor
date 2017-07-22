@@ -49,7 +49,7 @@ describe Gateway do
     end.to raise_error(GatewayError)
   end
 
-  it "should set content type to text/xml for soap post request" do
+  it "sets content type to text/xml for soap post request" do
     Net::HTTP.any_instance.expects(:request => simple_response)
 
     params = {:url => some_https_url}
@@ -57,10 +57,10 @@ describe Gateway do
 
     subject.soap_post(params, headers)
 
-    headers["Content-Type"].should match "text/xml"
+    expect(headers["Content-Type"]).to match "text/xml"
   end
 
-  it "should set content type to application/x-www-form-urlencoded for regular post request" do
+  it "sets content type to application/x-www-form-urlencoded for regular post request" do
     Net::HTTP.any_instance.expects(:request => simple_response)
 
     params = {:url => some_https_url}
@@ -68,7 +68,7 @@ describe Gateway do
 
     subject.post(params, headers)
 
-    headers["Content-Type"].should match "application/x-www-form-urlencoded"
+    expect(headers["Content-Type"]).to match "application/x-www-form-urlencoded"
   end
 
   it "logs body of request" do
@@ -79,7 +79,7 @@ describe Gateway do
     subject.soap_post(:url => some_https_url, :body => 'some_request')
   end
 
-  it "should log timeout errors and raise GatewayError" do
+  it "logs timeout errors and raise GatewayError" do
     subject.logger.expects(:error).with("#{subject.class.name} received error: Timeout::Error")
     Net::HTTP.any_instance.expects(:request).raises(Timeout::Error.new(nil))
 

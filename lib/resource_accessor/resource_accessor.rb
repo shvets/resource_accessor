@@ -1,43 +1,44 @@
 require 'net/https'
 require 'cgi'
+require 'openssl/ssl'
 
 class ResourceAccessor
   attr_accessor :timeout, :ca_file, :validate_ssl_cert
 
   alias validate_ssl_cert? validate_ssl_cert
 
-  def initialize timeout = 10000, ca_file = nil, validate_ssl_cert = false
+  def initialize(timeout = 10000, ca_file = nil, validate_ssl_cert = false)
     @timeout = timeout
     @ca_file = ca_file
     @validate_ssl_cert = validate_ssl_cert
   end
 
-  def get_response params, headers = {}
+  def get_response(params, headers = {})
     locate_response(params[:url], params[:query], params[:method], headers, params[:body], params[:escape], params[:cookie])
   end
 
-  def get_soap_response params, headers = {}
-    headers["SOAPAction"] = params[:soap_action] if params[:soap_action]
-    headers["SOAPAction"] = "" unless headers["SOAPAction"]
-    headers["Content-Type"] = "text/xml;charset=UTF-8" unless headers["Content-Type"]
+  def get_soap_response(params, headers = {})
+    headers['SOAPAction'] = params[:soap_action] if params[:soap_action]
+    headers['SOAPAction'] = '' unless headers['SOAPAction']
+    headers['Content-Type'] = 'text/xml;charset=UTF-8' unless headers['Content-Type']
 
     locate_response(params[:url], params[:query], params[:method], headers, params[:body], params[:escape], params[:cookie])
   end
 
-  def get_ajax_response params, headers = {}
+  def get_ajax_response(params, headers = {})
     headers['X-Requested-With'] = 'XMLHttpRequest'
 
     locate_response(params[:url], params[:query], params[:method], headers, params[:body], params[:escape], params[:cookie])
   end
 
-  def get_json_response params, headers = {}
-    headers["Content-Type"] = "application/json;charset=UTF-8"
+  def get_json_response(params, headers = {})
+    headers['Content-Type'] = 'application/json;charset=UTF-8'
 
     locate_response(params[:url], params[:query], params[:method], headers, params[:body], params[:escape], params[:cookie])
   end
 
-  def get_cookie url, user_name, password
-    headers = {"Content-Type" => "application/x-www-form-urlencoded; charset=UTF-8"}
+  def get_cookie(url, user_name, password)
+    headers = {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
 
     body = {:username => user_name, :password => password}
 
@@ -52,7 +53,7 @@ class ResourceAccessor
     encode params, escape
   end
 
-  def locate_response url, query, method, headers, body, escape=true, cookie=nil
+  def locate_response(url, query, method, headers, body, escape=true, cookie=nil)
     response = execute_request url, query, method, headers, body, escape, cookie
 
     if response.class == Net::HTTPMovedPermanently
@@ -71,9 +72,9 @@ class ResourceAccessor
     response
   end
 
-  def execute_request url, query, method, headers, body, escape, cookie=nil
-    headers["User-Agent"] = "Ruby/#{RUBY_VERSION}" unless headers["User-Agent"]
-    headers["Content-Type"] = "application/x-www-form-urlencoded; charset=UTF-8" unless headers["Content-Type"]
+  def execute_request(url, query, method, headers, body, escape, cookie=nil)
+    headers['User-Agent'] = "Ruby/#{RUBY_VERSION}" unless headers['User-Agent']
+    headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8' unless headers['Content-Type']
 
     if cookie
       headers['Cookie'] = cookie
@@ -87,7 +88,7 @@ class ResourceAccessor
 
     connection = Net::HTTP.new(uri.host, uri.port)
 
-    if uri.scheme == "https"
+    if uri.scheme == 'https'
       connection.use_ssl = true
 
       if validate_ssl_cert?
